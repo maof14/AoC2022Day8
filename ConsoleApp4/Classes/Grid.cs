@@ -95,5 +95,43 @@ namespace ConsoleApp4.Classes
         public Tree GetTree(int x, int y) {
             return Trees.FirstOrDefault(tree => tree.X == x && tree.Y == y);
         }
+
+        public int GetBestScenicScene()
+        {
+            var bestScenicScene = -1;
+
+            foreach(var tree in Trees) // "en-dimensionell" titt
+            {
+                // Kolla rekursivt från varje träd för att hitta det med bäst score
+                var scoreX = GetVisibleTreesFromTree(tree, tree.Length, x => x + 1, y => y);
+                var scoreY = GetVisibleTreesFromTree(tree, tree.Length, x => x, y => y + 1);
+                var scoreXBack = GetVisibleTreesFromTree(tree, tree.Length, x => x - 1, y => y);
+                var scoreYBack = GetVisibleTreesFromTree(tree, tree.Length, x => x, y => y - 1);
+
+                var currentScenicScore = scoreX * scoreY * scoreXBack * scoreYBack;
+
+                if (currentScenicScore > bestScenicScene)
+                    bestScenicScene = currentScenicScore;
+            }
+
+            return bestScenicScene;
+        }
+
+        private int GetVisibleTreesFromTree(Tree tree, int sourceTreeLength, Func<int, int> xFunc, Func<int, int> yFunc)
+        {
+            // Jag ser ju alltid nästa, undantag nedan
+            var visibleFromHere = 1;
+
+            // returnera noll om är på kanten
+            var nextTree = GetTree(xFunc(tree.X), yFunc(tree.Y));
+            if (nextTree == null)
+                return 0;
+
+            // Om nästa träd är lägre än det jag står på samt ursprungsträdet
+            if (nextTree.Length < tree.Length || sourceTreeLength > nextTree.Length)
+                return visibleFromHere += GetVisibleTreesFromTree(nextTree, sourceTreeLength, xFunc, yFunc);
+
+            return visibleFromHere;
+        }
     }
 }

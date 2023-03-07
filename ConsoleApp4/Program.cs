@@ -11,9 +11,9 @@ namespace ConsoleApp4
         {
             Console.WriteLine("Hello World!");
 
-            var grid = new Grid(99);
-
-            grid.AddRows(
+            var input = new string[]
+            {
+                
                 "012333020214114313144335140322135024300001316000003021661021402203334043530025242334031301420211203",
                 "321322012210411202411222140105022243546162656353412656161345264013320002410502113123133103110310103",
                 "310210132224000411310104525310511405443133224046520106440616614533122315022301300411313020011332300",
@@ -113,10 +113,24 @@ namespace ConsoleApp4
                 "100301430413204340531014552335402025020633400206055204550144413055422662024401012530320042240222230",
                 "220122144120304224030114032152003231656506125641631435614445322436263440352340040230123321013001210",
                 "311002103114013110111531002542445223254606426006406106222400065161011323410222244352334031123301213"
+                
+                /* "30373",
+                "25512",
+                "65332",
+                "33549",
+                "35390" */
+            };
+
+            var len = input.First().Length;
+
+            var grid = new Grid(len);
+
+            grid.AddRows(
+                input
             );
 
             var visible = new List<Tree>();
-                
+            
             for(var i = 0; i < grid.Length; i++)
             {
                 visible.AddRange(grid.GetVisibleTreesByColumn(i));
@@ -125,10 +139,14 @@ namespace ConsoleApp4
                 visible.AddRange(grid.GetVisibleTreesByRow(i, true));
             }
 
+            // Get unique trees
             var distinctTrees = visible.GroupBy(x => x.Guid).Select(x => x.First()).ToList();
 
-            Console.WriteLine($"Distinct visible trees: {distinctTrees.Count}");
-            Console.WriteLine("");
+            var scenicScene = grid.GetBestScenicScene();
+
+            Console.WriteLine($"Solution 1: Visible trees from outside grid: {distinctTrees.Count}");
+            Console.WriteLine($"Solution 2: Best scenic scene: {scenicScene}");
+            var key = Console.ReadKey();
         }
     }
 }
